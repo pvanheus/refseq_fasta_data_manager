@@ -2,7 +2,7 @@
 
 from __future__ import print_function, division
 import argparse
-from datatime import date
+from datetime import date
 import gzip
 import json
 from multiprocessing import Process, Queue
@@ -125,14 +125,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download RefSeq databases')
     parser.add_argument('--debug', default=False, action='store_true', help='Print debugging output to stderr (verbose)')
     parser.add_argument('--compress', default=False, action='store_true', help='Compress output files')
-    parser.add_argument('--output_directory', help='Directory to write output to')
+    parser.add_argument('--output_directory', default='tmp', help='Directory to write output to')
     parser.add_argument('--galaxy_datamanager_filename', help='Galaxy JSON format file describing data manager inputs')
     parser.add_argument('division_names', nargs='+', help='RefSeq divisions to download')
     parser.add_argument('mol_types', nargs='+', help='Molecule types (genomic, rna, protein) to fetch')
     args = parser.parse_args()
     if args.galaxy_datamanager_filename is not None:
         dm_opts = json.loads(open(args.galaxy_datamanager_filename).read())
-        output_directory = dm_opts['output_data'][0]['extra_files_path']
+        output_directory = dm_opts['output_data'][0]['extra_files_path'] # take the extra_files_path of the first output parameter
         data_manager_dict = {}
     else:
         output_directory = args.output_directory
@@ -145,8 +145,8 @@ if __name__ == '__main__':
                 unique_key = division_name + '.' + release_num + '.' + mol_type + '.' + today_str
                 dbkey = division_name + '.' + release_num + '.' + mol_type
                 desc = 'RefSeq ' + division_name + ' Release ' + release_num + ' ' + mol_type + ' (' + today_str + ')'
-                path = fasta_files[i]
+                path = os.path.join(output_directory, fasta_files[i])
                 _add_data_table_entry(data_manager_dict=data_manager_dict, 
                                       data_table_entry=dict(value=unique_key, dbkey=dbkey, name=desc, path=path),
                                       data_table_name='all_fasta')
-            open(args.galaxy_datamanger_filename, 'wb').write(json.dumps(data_manager_dict).encode())
+            open(args.galaxy_datamanager_filename, 'wb').write(json.dumps(data_manager_dict).encode())
