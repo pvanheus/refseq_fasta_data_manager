@@ -1,4 +1,4 @@
-<tool id="data_manager_fetch_refseq" name="RefSeq data manager" version="0.0.1" tool_type="manage_data">
+<tool id="data_manager_fetch_refseq" name="RefSeq data manager" version="0.0.2" tool_type="manage_data">
     <description>Fetch FASTA data from NCBI RefSeq and update all_fasta data table</description>
     <requirements>
         <requirement type="package" version="3">python</requirement>
@@ -10,7 +10,7 @@
       #end if
       --galaxy_datamanager_filename '${output_file}'
       --division_names ${division_names}
-      --mol_types ${mol_type}
+      --mol_types ${mol_types}
       #if str( $pin_date ) != 'NO':
         --pin_date '${pin_date}'
       #end if
