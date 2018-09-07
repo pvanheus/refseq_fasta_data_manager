@@ -3,6 +3,7 @@
 from __future__ import print_function, division
 import argparse
 from datetime import date
+import functools
 import gzip
 import json
 from multiprocessing import Process, Queue
@@ -51,12 +52,11 @@ def unzip_to(conn, out_dir, output_filename, chunk_size=4096, debug=False, compr
         while input_filename != 'STOP':
             if debug:
                 print('Reading', input_filename, file=sys.stderr)
-            with gzip.open(input_filename) as input_file:
-                data = input_file.read(chunk_size)
-                while data != '':
+            with gzip.open(input_filename, 'rb') as input_file:
+                read_chunk = functools.partial(input_file.read, (chunk_size))
+                for data in iter(read_chunk, b''):  # use b'' as a sentinel to stop the loop. note '' != b'' in Python 3
                     output_file.write(data)
-                    data = input_file.read(chunk_size)
-            # os.unlink(input_filename)
+            os.unlink(input_filename)
             input_filename = conn.get()
 
 def get_refseq_division(division_name, mol_types, output_directory, debug=False, compress=False):
