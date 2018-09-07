@@ -56,7 +56,7 @@ def unzip_to(conn, out_dir, output_filename, chunk_size=4096, debug=False, compr
                 while data != '':
                     output_file.write(data)
                     data = input_file.read(chunk_size)
-            os.unlink(input_filename)
+            # os.unlink(input_filename)
             input_filename = conn.get()
 
 def get_refseq_division(division_name, mol_types, output_directory, debug=False, compress=False):
@@ -127,8 +127,9 @@ if __name__ == '__main__':
     parser.add_argument('--compress', default=False, action='store_true', help='Compress output files')
     parser.add_argument('--output_directory', default='tmp', help='Directory to write output to')
     parser.add_argument('--galaxy_datamanager_filename', help='Galaxy JSON format file describing data manager inputs')
-    parser.add_argument('division_names', nargs='+', help='RefSeq divisions to download')
-    parser.add_argument('mol_types', nargs='+', help='Molecule types (genomic, rna, protein) to fetch')
+    parser.add_argument('--division_names', nargs='+', help='RefSeq divisions to download')
+    parser.add_argument('--mol_types', nargs='+', help='Molecule types (genomic, rna, protein) to fetch')
+    parser.add_argument('--pin_date', help='Force download date to this version string')
     args = parser.parse_args()
     if args.galaxy_datamanager_filename is not None:
         dm_opts = json.loads(open(args.galaxy_datamanager_filename).read())
@@ -137,7 +138,10 @@ if __name__ == '__main__':
     else:
         output_directory = args.output_directory
     for division_name in args.division_names:
-        today_str = date.today().strftime('%Y-%m-%d') # ISO 8601 date format
+        if args.pin_date is not None:
+            today_str = args.pin_date
+        else:
+            today_str = date.today().strftime('%Y-%m-%d') # ISO 8601 date format
         [release_num, fasta_files] = get_refseq_division(division_name, args.mol_types, output_directory, args.debug, args.compress)
         if args.galaxy_datamanager_filename is not None:
             for i,  mol_type in enumerate(args.mol_types):
