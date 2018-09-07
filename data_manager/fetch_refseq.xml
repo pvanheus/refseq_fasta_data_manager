@@ -68,7 +68,7 @@
         </test>
     </tests>
     <help><![CDATA[
-This data managed fetches FASTA format collections of proteins, nucleotides (genomic DNA) and RNA
+This data manager fetches FASTA format collections of proteins, nucleotides (genomic DNA) and RNA
 from NCBI's RefSeq_ data collection.
 
 RefSeq is released every two months and consists of a number of divisions. Some sequences are shared
