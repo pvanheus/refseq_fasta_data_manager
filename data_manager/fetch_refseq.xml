@@ -1,4 +1,4 @@
-<tool id="data_manager_fetch_refseq" name="RefSeq data manager" version="0.0.4" tool_type="manage_data">
+<tool id="data_manager_fetch_refseq" name="RefSeq data manager" version="0.0.13" tool_type="manage_data">
     <description>Fetch FASTA data from NCBI RefSeq and update all_fasta data table</description>
     <requirements>
         <requirement type="package" version="3">python</requirement>
@@ -32,7 +32,7 @@
             <option value="vertebrate_other">Other Vertebrate</option>
             <option value="viral">Viral</option>
         </param>
-        <param argument="mol_types" type="select" label="Molecule type" help="Select at least one of genomic, protein or rna sequence">
+        <param argument="mol_types" type="select" multiple="true" label="Molecule type" help="Select at least one of genomic, protein or rna sequence">
             <option value="protein">Protein</option>
             <option value="genomic">Genomic (DNA)</option>
             <option value="rna">RNA</option>

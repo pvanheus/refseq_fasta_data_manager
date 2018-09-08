@@ -127,24 +127,27 @@ if __name__ == '__main__':
     parser.add_argument('--compress', default=False, action='store_true', help='Compress output files')
     parser.add_argument('--output_directory', default='tmp', help='Directory to write output to')
     parser.add_argument('--galaxy_datamanager_filename', help='Galaxy JSON format file describing data manager inputs')
-    parser.add_argument('--division_names', nargs='+', help='RefSeq divisions to download')
-    parser.add_argument('--mol_types', nargs='+', help='Molecule types (genomic, rna, protein) to fetch')
+    parser.add_argument('--division_names', help='RefSeq divisions to download')
+    parser.add_argument('--mol_types', help='Molecule types (genomic, rna, protein) to fetch')
     parser.add_argument('--pin_date', help='Force download date to this version string')
     args = parser.parse_args()
+
+    division_names = args.division_names.split(',')
+    mol_types = args.mol_types.split(',')
     if args.galaxy_datamanager_filename is not None:
         dm_opts = json.loads(open(args.galaxy_datamanager_filename).read())
         output_directory = dm_opts['output_data'][0]['extra_files_path'] # take the extra_files_path of the first output parameter
         data_manager_dict = {}
     else:
         output_directory = args.output_directory
-    for division_name in args.division_names:
+    for division_name in division_names:
         if args.pin_date is not None:
             today_str = args.pin_date
         else:
             today_str = date.today().strftime('%Y-%m-%d') # ISO 8601 date format
-        [release_num, fasta_files] = get_refseq_division(division_name, args.mol_types, output_directory, args.debug, args.compress)
+        [release_num, fasta_files] = get_refseq_division(division_name, mol_types, output_directory, args.debug, args.compress)
         if args.galaxy_datamanager_filename is not None:
-            for i,  mol_type in enumerate(args.mol_types):
+            for i, mol_type in enumerate(mol_types):
                 assert mol_type in fasta_files[i], "Filename does not contain expected mol_type ({}, {})".format(mol_type, fasta_files[i])
                 unique_key = division_name + '.' + release_num + '.' + mol_type + '.' + today_str
                 dbkey = division_name + '.' + release_num + '.' + mol_type
